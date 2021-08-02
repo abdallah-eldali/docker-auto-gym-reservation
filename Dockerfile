@@ -31,7 +31,7 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 # copy the script 
-COPY gymbot.py /code
+COPY gymbot.py .
 
 # create a use and sign as the user to run the script as non-root
 RUN adduser worker
