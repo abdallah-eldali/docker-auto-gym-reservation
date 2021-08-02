@@ -31,11 +31,11 @@ COPY requirement.txt .
 RUN pip3 install -r requirement.txt
 
 # copy the script 
-COPY os.py /code
+COPY gymbot.py /code
 
 # create a use and sign as the user to run the script as non-root
 RUN adduser worker
 USER worker
 
 # execute the python script
-CMD ["python3", "os.py"]
+CMD ["python3", "gymbot.py"]
