@@ -27,8 +27,8 @@ RUN mkdir /code
 WORKDIR /code
 
 # install requirements (i.e.: python modules)
-COPY requirement.txt .
-RUN pip3 install -r requirement.txt
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
 
 # copy the script 
 COPY gymbot.py /code
