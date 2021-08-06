@@ -1,5 +1,6 @@
-from sys import platform
-import os
+#TODO: Create documentation for the code
+#      Move the functions to a separate script and import it here as a module
+
 import logging
 
 from selenium import webdriver
@@ -9,8 +10,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains 
 from selenium.common.exceptions import TimeoutException
 
+from time import sleep
 from datetime import datetime, time, date, timedelta
-from pytz import timezone
 import pause
 
 
@@ -36,7 +37,7 @@ while True:
 '''
 
 #FIXME: Remove this when done
-URL = "C:\Program Files (x86)\chromedriver.exe"
+URL = "C:\\Program Files (x86)\\chromedriver.exe"
 
 #TODO:
 # * Add more documentation + create function to make it more modular
@@ -47,12 +48,18 @@ TIMEOUT = 60
 TIMESLOT_TEXT = "5:45 PM"
 if date.today().weekday() in [3, 4]:
     TIMESLOT_TEXT = "1:00 PM"
-    
-tz = timezone("Canada/Eastern")
 
-logging.basicConfig(format='%(asctime)s - %(message)s',
-                            level=logging.INFO,
-                            datefmt='%Y-%m-%d %H:%M:%S')
+logging.basicConfig(format="%(asctime)s [%(levelname)s] - %(message)s",
+                    encoding='utf-8',
+                    level=logging.INFO,
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    handlers=[
+                        logging.FileHandler("test.log"),
+                        logging.StreamHandler()
+                    ])
+
+#TODO: think of a better way to do this... try/catch thingy
+driver = None
 
 #HELPER FUNCTION:
 #TODO: Move to a module script instead
@@ -64,15 +71,14 @@ def prepareWebsite():
     logging.info("Opening the reservation website")
     driver.get("https://reservation.frontdesksuite.ca/rcfs/richcraftkanata/Home/Index?pageid=b3b9b36f-8401-466d-b4c4-19eb5547b43a&culture=en&uiculture=en")
     driver.get("https://reservation.frontdesksuite.ca/rcfs/richcraftkanata/ReserveTime/StartReservation?pageId=b3b9b36f-8401-466d-b4c4-19eb5547b43a&buttonId=d4c0e956-e659-46b1-9880-606dc8cd81da&culture=en&uiCulture=en")
-    driver.get("https://reservation.frontdesksuite.ca/rcfs/richcraftkanata/ReserveTime/TimeSelection?pageId=b3b9b36f-8401-466d-b4c4-19eb5547b43a&buttonId=d4c0e956-e659-46b1-9880-606dc8cd81da&culture=en")
-    #logging.info("Clicking the 'Submit' button")
-    #button = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.ID, "submit-btn")))
-    #ActionChains(driver).move_to_element(button).click(button).perform()
+    logging.info("Clicking the 'Submit' button")
+    button = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.ID, "submit-btn")))
+    ActionChains(driver).move_to_element(button).click(button).perform()
     return driver
 
 def reserveSpot(driver):
-    logging.info("Refreshing the page")
-    driver.refresh()
+    #logging.info("Refreshing the page")
+    #driver.refresh()
     logging.info("Clicking the timeslot")
     timeslot = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".title.title-padded.d-flex")))[-1]
     timeslot.click()
@@ -86,7 +92,7 @@ def reserveSpot(driver):
     timebox = timebox.find_element_by_xpath("..")
     if timebox.is_enabled():
         ActionChains(driver).move_to_element(timebox).click(timebox).perform()
-        logging.info("Clicking on the " + timebox.text + " slot.")
+        logging.info("Clicking on the time slot.")
     else:
         logging.info("Button is disabled... ending program")
         driver.close()
@@ -109,28 +115,33 @@ def reserveSpot(driver):
                         .move_to_element(submit).click(submit) \
                         .perform()
 
-    logging.info("Waiting for confirmation... will timeout in 2 minutes")
-    WebDriverWait(driver, 60*2).until(EC.url_contains("Confirmed"))
-    logging.info("Reservation Confirmed!")
+    logging.info("Waiting for confirmation... will timeout in " + str(TIMEOUT) + " seconds")
+    sleep(TIMEOUT)
+    if "OverMaxReservationCount" in driver.current_url:
+        logging.info("Time has already been reserved")
+    if "Confirmed" in driver.current_url:
+        logging.info("Reservation Confirmed!")
+    #WebDriverWait(driver, 60*2).until(EC.url_contains("Confirmed"))
     driver.close()
 
 def main():
     try:
         #Time to load the page
-        prepare = tz.localize(datetime.combine(datetime.today(), time(12+5, 59)))
-        logging.info("Prepare until: " + str(prepare))
-        pause.until(prepare)
-        driver = prepareWebsite()
+        #prepare = tz.localize(datetime.combine(datetime.today(), time(12+5, 59)))
+        #logging.info("Prepare until: " + str(prepare))
+        #pause.until(prepare)
+
+        #Time to refresh the page and click the time slot
+        opens = datetime.combine(datetime.today(), time(12+6, 00, 1))
+        logging.info("Setting the opening at " + str(opens))
+        pause.until(opens)
 
         while True:
-            #Time to refresh the page and click the time slot
-            opens = tz.localize(datetime.combine(datetime.today(), time(12+6, 00, 1)))
-            logging.info("Setting the opening at " + str(opens))
-            pause.until(opens)
+            driver = prepareWebsite()
             reserveSpot(driver)
 
             #Wait for tomorrow
-            sleepUntilTomorrow = tz.localize(datetime.combine((datetime.today() + timedelta(days=1)), time(12+5, 59)))
+            sleepUntilTomorrow = datetime.combine((datetime.today() + timedelta(days=1)), time(12+6, 00, 1))
             logging.info("Sleeping until tomorrow: " + str(sleepUntilTomorrow))
             pause.until(sleepUntilTomorrow)  
     except:
@@ -138,7 +149,8 @@ def main():
         raise
     finally:
         logging.info("Closing driver")
-        driver.close()
+        if driver is not None:
+            driver.close()
 
 if __name__ == "__main__":
     main()

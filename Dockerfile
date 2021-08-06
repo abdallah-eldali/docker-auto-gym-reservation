@@ -4,7 +4,8 @@ FROM python:latest
 RUN apt-get update && \
     apt-get install -yq chromium \
                         xvfb \
-                        unzip
+                        unzip \
+                        tzdata
 
 # chromeDriver v90
 RUN wget -q "https://chromedriver.storage.googleapis.com/90.0.4430.24/chromedriver_linux64.zip" -O /tmp/chromedriver.zip \
@@ -34,8 +35,11 @@ RUN pip3 install -r requirements.txt
 COPY gymbot.py .
 
 # create a use and sign as the user to run the script as non-root
-RUN adduser worker
-USER worker
+#RUN adduser worker
+#USER worker
+
+#Set the timezone
+ENV TZ Canada/Eastern
 
 # execute the python script
 CMD ["python3", "gymbot.py"]
