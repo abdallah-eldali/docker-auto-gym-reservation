@@ -47,7 +47,7 @@ TIMEOUT = 60
 
 TIMESLOT_TEXT = "5:45 PM"
 if date.today().weekday() in [3, 4]:
-    TIMESLOT_TEXT = "1:00 PM"
+    TIMESLOT_TEXT = "2:15 PM"
 
 logging.basicConfig(format="%(asctime)s [%(levelname)s] - %(message)s",
                     encoding='utf-8',
@@ -128,11 +128,6 @@ def reserveSpot(driver):
 
 def main():
     try:
-        #Time to load the page
-        #prepare = tz.localize(datetime.combine(datetime.today(), time(12+5, 59)))
-        #logging.info("Prepare until: " + str(prepare))
-        #pause.until(prepare)
-
         #Time to refresh the page and click the time slot
         opens = datetime.combine(datetime.today(), time(12+6, 00, 1))
         logging.info("Setting the opening at " + str(opens))
