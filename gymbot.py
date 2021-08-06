@@ -54,7 +54,7 @@ logging.basicConfig(format="%(asctime)s [%(levelname)s] - %(message)s",
                     level=logging.INFO,
                     datefmt='%Y-%m-%d %H:%M:%S',
                     handlers=[
-                        logging.FileHandler("test.log"),
+                        logging.FileHandler("/var/log/gymbot.log"),
                         logging.StreamHandler()
                     ])
 
@@ -71,9 +71,11 @@ def prepareWebsite():
     logging.info("Opening the reservation website")
     driver.get("https://reservation.frontdesksuite.ca/rcfs/richcraftkanata/Home/Index?pageid=b3b9b36f-8401-466d-b4c4-19eb5547b43a&culture=en&uiculture=en")
     driver.get("https://reservation.frontdesksuite.ca/rcfs/richcraftkanata/ReserveTime/StartReservation?pageId=b3b9b36f-8401-466d-b4c4-19eb5547b43a&buttonId=d4c0e956-e659-46b1-9880-606dc8cd81da&culture=en&uiCulture=en")
-    logging.info("Clicking the 'Submit' button")
-    button = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.ID, "submit-btn")))
-    ActionChains(driver).move_to_element(button).click(button).perform()
+    #if the link above doesn't redirect us to the time selection page, then click the Confirm button
+    if "TimeSelection" not in driver.current_url:
+        logging.info("Clicking the 'Submit' button")
+        button = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.ID, "submit-btn")))
+        ActionChains(driver).move_to_element(button).click(button).perform()
     return driver
 
 def reserveSpot(driver):
