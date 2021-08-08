@@ -129,7 +129,7 @@ def reserveSpot(driver):
 def main():
     try:
         #Time to refresh the page and click the time slot
-        opens = datetime.combine(datetime.today(), time(12+6, 00, 1))
+        opens = datetime.combine(datetime.today(), time(12+6, 1, 0))
         logging.info("Setting the opening at " + str(opens))
         pause.until(opens)
 
@@ -138,7 +138,7 @@ def main():
             reserveSpot(driver)
 
             #Wait for tomorrow
-            sleepUntilTomorrow = datetime.combine((datetime.today() + timedelta(days=1)), time(12+6, 00, 1))
+            sleepUntilTomorrow = datetime.combine((datetime.today() + timedelta(days=1)), time(12+6, 1, 0))
             logging.info("Sleeping until tomorrow: " + str(sleepUntilTomorrow))
             pause.until(sleepUntilTomorrow)  
     except:
