@@ -32,6 +32,7 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 # copy the script 
+COPY whatsappMessage.py .
 COPY gymbot.py .
 
 # create a use and sign as the user to run the script as non-root
