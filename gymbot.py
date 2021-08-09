@@ -14,6 +14,8 @@ from time import sleep
 from datetime import datetime, time, date, timedelta
 import pause
 
+import whatsappMessage
+
 
 '''
 PSEUDOCODE
@@ -97,6 +99,7 @@ def reserveSpot(driver):
         logging.info("Clicking on the time slot.")
     else:
         logging.info("Button is disabled... ending program")
+        whatsappMessage.sendMessage("No available times for the time slot...")
         driver.close()
         return
 
@@ -121,8 +124,10 @@ def reserveSpot(driver):
     sleep(TIMEOUT)
     if "OverMaxReservationCount" in driver.current_url:
         logging.info("Time has already been reserved")
-    if "Confirmed" in driver.current_url:
+        whatsappMessage.sendMessage("Spot has already been reserved")
+    else:
         logging.info("Reservation Confirmed!")
+        whatsappMessage.sendMessage("Successfully reserved spot")
     #WebDriverWait(driver, 60*2).until(EC.url_contains("Confirmed"))
     driver.close()
 
@@ -141,9 +146,10 @@ def main():
             sleepUntilTomorrow = datetime.combine((datetime.today() + timedelta(days=1)), time(12+6, 1, 0))
             logging.info("Sleeping until tomorrow: " + str(sleepUntilTomorrow))
             pause.until(sleepUntilTomorrow)  
-    except:
+    except Exception as e:
         logging.exception("Unexpected exception...")
-        raise
+        whatsappMessage.sendMessage("Failure: " + str(e))
+        raise e
     finally:
         logging.info("Closing driver")
         if driver is not None:
