@@ -43,4 +43,4 @@ COPY gymbot.py .
 ENV TZ Canada/Eastern
 
 # execute the python script
-CMD ["python3", "gymbot.py"]
+ENTRYPOINT ["python3", "gymbot.py"]
