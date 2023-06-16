@@ -16,3 +16,9 @@ The next step for this project would've been to add a CI/CD pipeline (I was betw
 * Having to login into the VM (through SSH) and manually pull the image and create a container for it
 
 These steps could've been easly automated through a pipeline. I also had experience writing pipeline scripts through my internships as DevOps
+
+## Notes:
+
+* All sensitive information in the Git history were removed by the [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/)
+* The `xvfb-chromium` file is from the [docker-chromium-xvfb](https://github.com/atlassian/docker-chromium-xvfb) repo
+* The script used to take arguments to fill in the information required to make the reservations (full name, email and phone number)
