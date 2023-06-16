@@ -16,9 +16,6 @@ import sys
 import logging
 import whatsappMessage
 
-#FIXME: Remove this when done
-URL = "C:\\Program Files (x86)\\chromedriver.exe"
-
 #TODO:
 # * Add more documentation + create function to make it more modular
 # * Improve code for running 24/7
@@ -142,6 +139,10 @@ def main(nameStr, phoneStr, emailStr, weekdayTimeslot, weekendTimeslot):
         if driver is not None:
             driver.close()
 
+# First argument is the name of the person which the reservation is made for
+# Second argument is the phone number
+# Third is the email
+# Fourth and fifth are the preferred reservation dates
 if __name__ == "__main__":
     arguments = sys.argv
     name = arguments[1]
